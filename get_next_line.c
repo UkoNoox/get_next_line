@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 14:57:17 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/24 16:58:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2020/11/24 17:44:08 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int		get_next_line(int fd, char **line)
 
 	if (BUFFER_SIZE <= 0)
 		return (-1);
-	if (fd < 0 || !line || !(buffer = malloc(sizeof(char) * BUFFER_SIZE + 1)))
+	if (fd < 0 || !line || !(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
 		return (-1);
 	while (endline(str[fd]) == 0 && (nb_read = read(fd, buffer, BUFFER_SIZE)))
 	{
