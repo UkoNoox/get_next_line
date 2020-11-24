@@ -6,65 +6,105 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 17:22:08 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/24 13:20:04 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2020/11/24 17:11:46 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *s)
+char	*ft_strdup(char *str)
 {
-	size_t	i;
+	int		i;
+	char	*dest;
+
+	if (!str)
+	{
+		if (!(dest = (char*)malloc(sizeof(char))))
+			return (NULL);
+		*dest = '\0';
+		return (dest);
+	}
+	if (!(dest = (char*)malloc(sizeof(char) * ft_strlen(str) + 1)))
+		return (NULL);
+	i = 0;
+	while (str[i])
+	{
+		dest[i] = str[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+char	*ft_strjoin(char *str, char *buffer)
+{
+	int		i;
+	int		len;
+	char	*dest;
+
+	if (!str)
+		return (ft_strdup(buffer));
+	len = ft_strlen(str) + ft_strlen(buffer);
+	if (!(dest = (char*)malloc(sizeof(char) * len + 1)))
+		return (NULL);
+	i = -1;
+	while (str[++i])
+		dest[i] = str[i];
+	while (*buffer)
+		dest[i] = *buffer++;
+	dest[i] = '\0';
+	free(str);
+	return (dest);
+}
+
+int		len_to_endl(char *str)
+{
+	int		i;
 
 	i = 0;
-	while (s[i] != '\0')
+	while (str[i] && str[i] != '\n')
 		i++;
 	return (i);
 }
 
-void	*ft_memmove(void *dest, const void *src, size_t n)
+char	*split_back(char *str)
 {
-	size_t		i;
-	char		*d;
-	const char	*s;
+	int		i;
+	char	*dest;
 
-	if (!dest && !src)
+	if (!(dest = (char*)malloc(sizeof(char) * len_to_endl(str) + 1)))
 		return (NULL);
-	d = dest;
-	s = src;
 	i = 0;
-	if (d < s)
-		while (n-- > 0)
-			*d++ = *s++;
-	else
-		while (++i <= n)
-			d[n - i] = s[n - i];
+	while (i < len_to_endl(str))
+	{
+		dest[i] = str[i];
+		i++;
+	}
+	dest[i] = '\0';
 	return (dest);
 }
 
-char	*create_str(char *str, char *buffer)
+char	*save_end(char *str)
 {
+	int		i;
+	int		j;
 	char	*dest;
-	int		len;
 
-	if (!str && !buffer)
+	i = 0;
+	j = 0;
+	while (str[i] != '\n')
+		i++;
+	while (str[i + j])
+		j++;
+	if (!(dest = (char*)malloc(sizeof(char) * j)))
 		return (NULL);
-	len = ft_strlen(str) + ft_strlen(buffer);
-	if (!(dest = (char*)malloc(sizeof(char) * len + 1)))
-		return (NULL);
-	ft_memmove(dest, str, ft_strlen(str));
-	ft_memmove(dest + ft_strlen(str), buffer, ft_strlen(buffer));
-	dest[len] = '\0';
+	j = 0;
+	while (str[++i])
+	{
+		dest[j] = str[i];
+		j++;
+	}
+	dest[j] = '\0';
 	free(str);
-	return (str);
-}
-
-int		endline(char *str)
-{
-	if (!str)
-		return (0);
-	while (*str)
-		if (*str++ == '\n')
-			return (1);
-	return (0);
+	return (dest);
 }

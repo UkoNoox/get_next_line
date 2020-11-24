@@ -6,58 +6,79 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 14:57:17 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/24 13:18:32 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2020/11/24 16:58:02 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*get_line(char *str)
+int		ft_strlen(char *str)
 {
 	int		i;
-	char	*dest;
 
-	if (!str)
-		return (NULL);
 	i = 0;
-	while (str[i] && str[i] != '\n')
+	while (str[i])
 		i++;
-	if (!(dest = (char*)malloc(sizeof(char) * i + 1)))
-		return (NULL);
+	return (i);
+}
+
+int		endline(char *str)
+{
+	int		i;
+
 	i = 0;
-	while (str[i] && str[i] != '\n')
+	if (!str)
+		return (0);
+	while (str[i])
 	{
-		dest[i] = str[i];
+		if (str[i] == '\n')
+			return (1);
 		i++;
 	}
-	dest[i] = '\0';
-	return (dest);
+	return (0);
+}
+
+char	*create_line(char *line, char **str)
+{
+	if (endline(*str) == 0)
+	{
+		line = ft_strdup(*str);
+		free(*str);
+		*str = NULL;
+	}
+	else
+	{
+		if (!(line = split_back(*str)))
+			return (NULL);
+		if (!(*str = save_end(*str)))
+			return (NULL);
+	}
+	return (line);
+	
 }
 
 int		get_next_line(int fd, char **line)
 {
 	char		*buffer;
-	static char	*str;
-	int			read_value;
+	int			nb_read;
+	static char	*str[256];
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (BUFFER_SIZE <= 0)
 		return (-1);
-	if (!(buffer = (char*)malloc(sizeof(char) * BUFFER_SIZE + 1)))
+	if (fd < 0 || !line || !(buffer = malloc(sizeof(char) * BUFFER_SIZE + 1)))
 		return (-1);
-	read_value = 1;
-	str = NULL;
-	while (!endline(str) && read_value != 0)
+	while (endline(str[fd]) == 0 && (nb_read = read(fd, buffer, BUFFER_SIZE)))
 	{
-		read_value = read(fd, buffer, BUFFER_SIZE);
-		if (read_value == -1)
+		if (nb_read == -1)
 		{
 			free(buffer);
 			return (-1);
 		}
-		buffer[read_value] = '\0';
-		str = create_str(str, buffer);
+		buffer[nb_read] = '\0';
+		str[fd] = ft_strjoin(str[fd], buffer);
 	}
 	free(buffer);
-	*line = get_line(str);
-	return (read_value == 0 ? 0 : 1);
+	if (!(*line = create_line(*line, &str[fd])))
+		return (-1);
+	return (str[fd] == NULL && nb_read == 0 ? 0 : 1);
 }
