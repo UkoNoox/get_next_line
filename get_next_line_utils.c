@@ -5,106 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/23 17:22:08 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/24 17:11:46 by ugdaniel         ###   ########.fr       */
+/*   Created: 2020/11/25 14:43:17 by ugdaniel          #+#    #+#             */
+/*   Updated: 2020/11/25 15:14:53 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strdup(char *str)
+size_t	ft_strlen(const char *s)
 {
 	int		i;
-	char	*dest;
 
-	if (!str)
-	{
-		if (!(dest = (char*)malloc(sizeof(char))))
-			return (NULL);
-		*dest = '\0';
-		return (dest);
-	}
-	if (!(dest = (char*)malloc(sizeof(char) * ft_strlen(str) + 1)))
-		return (NULL);
+	if (!s)
+		return (0);
 	i = 0;
-	while (str[i])
-	{
-		dest[i] = str[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-char	*ft_strjoin(char *str, char *buffer)
-{
-	int		i;
-	int		len;
-	char	*dest;
-
-	if (!str)
-		return (ft_strdup(buffer));
-	len = ft_strlen(str) + ft_strlen(buffer);
-	if (!(dest = (char*)malloc(sizeof(char) * len + 1)))
-		return (NULL);
-	i = -1;
-	while (str[++i])
-		dest[i] = str[i];
-	while (*buffer)
-		dest[i] = *buffer++;
-	dest[i] = '\0';
-	free(str);
-	return (dest);
-}
-
-int		len_to_endl(char *str)
-{
-	int		i;
-
-	i = 0;
-	while (str[i] && str[i] != '\n')
+	while (s[i])
 		i++;
 	return (i);
 }
 
-char	*split_back(char *str)
+void	*ft_memmove(void *dest, const void *src, size_t n)
 {
-	int		i;
-	char	*dest;
+	size_t		i;
+	char		*d;
+	const char	*s;
 
-	if (!(dest = (char*)malloc(sizeof(char) * len_to_endl(str) + 1)))
+	if (!dest && !src)
 		return (NULL);
+	if (dest == src)
+		return (dest);
+	d = (char*)dest;
+	s = (char*)src;
 	i = 0;
-	while (i < len_to_endl(str))
-	{
-		dest[i] = str[i];
-		i++;
-	}
-	dest[i] = '\0';
+	if (d < s)
+		while (n-- > 0)
+			*d++ = *s++;
+	else
+		while (++i <= n)
+			d[n - i] = s[n - i];
 	return (dest);
 }
 
-char	*save_end(char *str)
+int		find_endl(char *s)
 {
 	int		i;
-	int		j;
-	char	*dest;
 
+	if (!s)
+		return (0);
 	i = 0;
-	j = 0;
-	while (str[i] != '\n')
-		i++;
-	while (str[i + j])
-		j++;
-	if (!(dest = (char*)malloc(sizeof(char) * j)))
+	while (s[i])
+		if (s[i++] == '\n')
+			return (1);
+	return (0);
+}
+
+char	*ft_strjoin(char *s1, char *s2)
+{
+	size_t	s1_len;
+	size_t	s2_len;
+	size_t	len;
+	char	*rtn;
+
+	if (!s1 && !s2)
+		return (0);
+	s1_len = ft_strlen((char *)s1);
+	s2_len = ft_strlen((char *)s2);
+	len = s1_len + s2_len;
+	if (!(rtn = malloc(sizeof(char) * len + 1)))
 		return (NULL);
-	j = 0;
-	while (str[++i])
-	{
-		dest[j] = str[i];
-		j++;
-	}
-	dest[j] = '\0';
-	free(str);
-	return (dest);
+	ft_memmove(rtn, s1, s1_len);
+	ft_memmove(rtn + s1_len, s2, s2_len);
+	rtn[len] = '\0';
+	free((char *)s1);
+	return (rtn);
 }

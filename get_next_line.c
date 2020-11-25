@@ -5,80 +5,85 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/23 14:57:17 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/24 17:44:08 by ugdaniel         ###   ########.fr       */
+/*   Created: 2020/11/25 14:42:28 by ugdaniel          #+#    #+#             */
+/*   Updated: 2020/11/25 15:16:45 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int		ft_strlen(char *str)
+char	*save_str(char *str)
 {
+	char	*dest;
 	int		i;
+	int		j;
 
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-int		endline(char *str)
-{
-	int		i;
-
-	i = 0;
 	if (!str)
-		return (0);
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (1);
+		return (NULL);
+	i = 0;
+	while (str[i] && str[i] != '\n')
 		i++;
+	if (!str[i])
+	{
+		free(str);
+		return (NULL);
 	}
-	return (0);
+	if (!(dest = malloc(sizeof(char) * (ft_strlen(str) - i) + 1)))
+		return (NULL);
+	i++;
+	j = 0;
+	while (str[i])
+		dest[j++] = str[i++];
+	dest[j] = '\0';
+	free(str);
+	return (dest);
 }
 
-char	*create_line(char *line, char **str)
+char	*create_line(char *str)
 {
-	if (endline(*str) == 0)
+	char	*line;
+	int		i;
+
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (str[i] && str[i] != '\n')
+		i++;
+	if (!(line = (char*)malloc(sizeof(char) * i + 1)))
+		return (NULL);
+	i = 0;
+	while (str[i] && str[i] != '\n')
 	{
-		line = ft_strdup(*str);
-		free(*str);
-		*str = NULL;
+		line[i] = str[i];
+		i++;
 	}
-	else
-	{
-		if (!(line = split_back(*str)))
-			return (NULL);
-		if (!(*str = save_end(*str)))
-			return (NULL);
-	}
+	line[i] = '\0';
 	return (line);
-	
 }
 
 int		get_next_line(int fd, char **line)
 {
 	char		*buffer;
-	int			nb_read;
 	static char	*str[256];
+	int			nb_read;
 
-	if (BUFFER_SIZE <= 0)
+	if (fd < 0 || !line || BUFFER_SIZE < 0)
 		return (-1);
-	if (fd < 0 || !line || !(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+	if (!(buffer = (char*)malloc(sizeof(char) * BUFFER_SIZE + 1)))
 		return (-1);
-	while (endline(str[fd]) == 0 && (nb_read = read(fd, buffer, BUFFER_SIZE)))
+	nb_read = 1;
+	while (!find_endl(str[fd]) && nb_read != 0)
 	{
-		if (nb_read == -1)
+		if ((nb_read = read(fd, buffer, BUFFER_SIZE)) == -1)
 		{
 			free(buffer);
-			return (-1);
+			return (-1);;
 		}
 		buffer[nb_read] = '\0';
 		str[fd] = ft_strjoin(str[fd], buffer);
 	}
 	free(buffer);
-	if (!(*line = create_line(*line, &str[fd])))
-		return (-1);
-	return (str[fd] == NULL && nb_read == 0 ? 0 : 1);
+	*line = create_line(str[fd]);
+	str[fd] = save_str(str[fd]);
+	return (nb_read == 0 ? 0 : 1);
 }
