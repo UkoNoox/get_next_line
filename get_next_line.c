@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/25 14:42:28 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/25 15:25:02 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2020/11/25 15:45:48 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int		get_next_line(int fd, char **line)
 		if ((nb_read = read(fd, buffer, BUFFER_SIZE)) == -1)
 		{
 			free(buffer);
-			return (-1);;
+			return (-1);
 		}
 		buffer[nb_read] = '\0';
 		str[fd] = ft_strjoin(str[fd], buffer);
