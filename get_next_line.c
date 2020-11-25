@@ -6,7 +6,7 @@
 /*   By: ugdaniel <ugdaniel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/25 14:42:28 by ugdaniel          #+#    #+#             */
-/*   Updated: 2020/11/25 15:16:45 by ugdaniel         ###   ########.fr       */
+/*   Updated: 2020/11/25 15:25:02 by ugdaniel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int		get_next_line(int fd, char **line)
 	static char	*str[256];
 	int			nb_read;
 
-	if (fd < 0 || !line || BUFFER_SIZE < 0)
+	if (fd < 0 || !line || BUFFER_SIZE <= 0)
 		return (-1);
 	if (!(buffer = (char*)malloc(sizeof(char) * BUFFER_SIZE + 1)))
 		return (-1);
